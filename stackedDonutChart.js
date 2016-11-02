@@ -21,6 +21,29 @@ function StackedWheel(elementDOM, settingsJSON) {
 
   // This is the money object. Here we will population each layer of the wheel with sections containing positioning, styling, reference, and content data.
   this.layersWithSectionData_a_o = [];
+
+  this.level1PercentageAdjuster();
+  this.recursivelyLoopAndGrabDataForCalculationsAndOrdering();
+  // debugger
+}
+
+
+StackedWheel.prototype.level1PercentageAdjuster  = function() {
+
+  // order sections min to max
+
+  // var minAllowableArcLength = 10;
+  // var cachedPercentageCount = 0;
+  // var numberOfSections = this.sections_a_o.data.length;
+
+  // loop thorugh new order
+
+  //   if section is less than minAllowableArcLength
+
+  //     cachedPercentageCount = cachedPercentageCount + (minAllowableArcLength - sectionPercent);
+
+
+
 }
 
 // Ok this one is tough. This is recursive function with obj as the main input. Initially, obj is the entire data jSON passed in by the runner file. The way the jSON is set up is a data object with an array of sections. Each section can also have a data object containing an array of sections... and so on. This is how the data is divided into sections. Ok so this function goes recursivley through levels, and loops through sections at each one (the for loop). This is how I populate the very important this.layersWithSectionData_a_o array of objects. At each level and each section, I give this object the neccessary information to build the wheel. Level, currentPercentScope, and radiusScope are alos inputs in this recursive function. Why? Level is quite obvious. I need to know what level I am on in order to put the sections in the correct level of the this.layersWithSectionData_a_o. currentPercentScope is key becuase I need to know what percent the containing section spans with respect to 2*Pi. For example, If level 1 section 1 is 50% of the circle, and level 2 section 1 (which is part of level 1 section 1) is 50% of level 1 section 1, it is 25% of the entire circle. I need to know what the containing percent scope is. the same goes for the radiusScope. I know the widths of each layer, but I need to know radius from center in order to calculate positioning. That means I need the previous radius information
@@ -55,9 +78,22 @@ StackedWheel.prototype.recursivelyLoopAndGrabDataForCalculationsAndOrdering  = f
     var currentSection = currentLevel.sections[this.layersWithSectionData_a_o[level].sectionsIndex_i];
 
     currentSection.description_s = obj[x].description_s;
-    currentSection.percentageArc_i = obj[x].percentageArc_i;
-    currentSection.containerScope = currentPercentScope;
-    currentSection.radiusScope_i = radiusScope;
+    currentSection.percentageArcData_i = obj[x].percentageArc_i;
+    currentSection.percentageArcView_i = obj[x].percentageArc_i;
+    currentSection.previousContainerPercentageScope_i = currentPercentScope;
+    currentSection.previousContainerRadiusScope_i = radiusScope;
+
+    if (level > 0) {
+      if (x == 0) {
+        currentSection.starterStatus_b = true;
+      } else {
+        currentSection.starterStatus_b = false;
+      }
+      currentSection.previousContainerSectionScope_i = this.layersWithSectionData_a_o[level - 1].sectionsIndex_i
+    } else {
+      currentSection.starterStatus_b = true;
+      currentSection.previousContainerSectionScope_i = 'none';
+    }
     currentSection.color_s = this.settingsJSON.options.layers[level].colorScheme_a_s[x];
 
     this.calculateSectionArcGlobalPercentage(level, currentLevel.sectionsIndex_i)
@@ -79,7 +115,7 @@ StackedWheel.prototype.recursivelyLoopAndGrabDataForCalculationsAndOrdering  = f
 StackedWheel.prototype.calculateSectionArcGlobalPercentage  = function(level, section, containerPercentScope) {
   var currentLevel = this.layersWithSectionData_a_o[level];
   var currentSection = currentLevel.sections[section];
-  currentSection.globalPercentageArc_i = currentSection.containerScope / 100 * currentSection.percentageArc_i;
+  currentSection.globalPercentageArc_i = currentSection.previousContainerPercentageScope_i / 100 * currentSection.percentageArcView_i;
 }
 
 // Calculating at which radian the section starts.
@@ -87,11 +123,19 @@ StackedWheel.prototype.calculateRadialStarts  = function(level, section) {
   var currentLevel = this.layersWithSectionData_a_o[level];
   var currentSection = currentLevel.sections[section];
 
-  // if not first section x!=0
   if (section != 0) {
-    currentSection.radialStart = currentLevel.sections[section - 1].radialEnd
+
+    // This is crucial becuase if sections in layers 2 or above do not amount to 100%, the next section in that level, from a different containing section, would just post up right next to it. We do not want that. For example, if a section in level 1 has two subsections (50% and 20%) and the next section in level 1 has two subsections (whatever %). The wahtever % subjections would rest up right next to the 20% subsection, making it look like it was part of the first section in level. 1. We want a space there. We want that whatever section to start and finish within its parent radial parameters.
+    if (level > 0 && currentSection.starterStatus_b == true) {
+      currentSection.radialStart = this.layersWithSectionData_a_o[level - 1].sections[currentSection.previousContainerSectionScope_i - 1].radialStart
+
+    // If everything adds up to 100%, the radial start of each section lines up with the radial end on the previous section. The only other condition is section 0 which has the radial start of 0. Bingo!
+    } else {
+      currentSection.radialStart = currentLevel.sections[section - 1].radialEnd
+    }
+
   }
-  // if first section
+  // If first section
   if (section == 0) {
     currentSection.radialStart = 0
   }
@@ -119,12 +163,12 @@ StackedWheel.prototype.calculateGridPositioning = function(level, section, numbe
   currentSection.arcWidth_i = currentLevel.minimumArcWidth_i + linearWidthDistribution * (section % numberOfSections);
 
   if (level == 0) {
-    currentSection.adjustedInnerRadius_i = currentSection.radiusScope_i + (currentSection.arcWidth_i - currentLevel.minimumArcWidth_i) / 2;
+    currentSection.adjustedInnerRadius_i = currentSection.previousContainerRadiusScope_i + (currentSection.arcWidth_i - currentLevel.minimumArcWidth_i) / 2;
     // The center (I hope) of each section in x and y coordinates with respect to the entire container.
     currentSection.sweetSpotXcoord = this.containerSize_a_i[0] / 2 + currentSection.adjustedInnerRadius_i * Math.cos((currentSection.radialStart + currentSection.radialEnd) / 2);
     currentSection.sweetSpotYcoord = this.containerSize_a_i[1] / 2 + currentSection.adjustedInnerRadius_i * Math.sin((currentSection.radialStart + currentSection.radialEnd) / 2);
   } else {
-    currentSection.adjustedInnerRadius_i = currentSection.radiusScope_i + (currentSection.arcWidth_i) / 2;
+    currentSection.adjustedInnerRadius_i = currentSection.previousContainerRadiusScope_i + (currentSection.arcWidth_i) / 2;
     // The center (I hope) of each section in x and y coordinates with respect to the entire container.
     currentSection.sweetSpotXcoord = this.containerSize_a_i[0] / 2 + (currentSection.adjustedInnerRadius_i + this.radiusPop_i * level/2) * Math.cos((currentSection.radialStart + currentSection.radialEnd) / 2);
     currentSection.sweetSpotYcoord = this.containerSize_a_i[1] / 2 + (currentSection.adjustedInnerRadius_i + this.radiusPop_i * level/2) * Math.sin((currentSection.radialStart + currentSection.radialEnd) / 2);
@@ -152,9 +196,9 @@ StackedWheel.prototype.animationCycler = function(sectionIDs, sectionPercentInte
       var tempSection = this.layersWithSectionData_a_o[xLevels].sections[sectionIDs[xLevels]];
       var endForArc = tempSection.radialStart + (tempSection.radialEnd - tempSection.radialStart) * sectionPercentInterval / (100);
 
-      // This is for the radius pop. The 3rd level sections were over lapping with the second level sections before the pop becuase they were not taking into account the second level pop. They would eventually pop into the right place it just looked off.
-      if (sectionIDs[0] >0 && xLevels > 0){
-          this.pastePieArc(xLevels, sectionIDs[xLevels], endForArc, this.radiusPop_i*(xLevels - 1));
+      // This is for the radius pop. The 3rd level sections were over lapping with the second level sections  becuase they were not taking into account the second level pop.
+      if (xLevels > 0){
+          this.pastePieArc(xLevels, sectionIDs[xLevels], endForArc, this.radiusPop_i*(xLevels));
       } else {
         this.pastePieArc(xLevels, sectionIDs[xLevels], endForArc, 0);
       }
@@ -224,12 +268,16 @@ StackedWheel.prototype.pastePieText = function(levelID, sectionID) {
   var currentSection = currentLevel.sections[sectionID];
   var toPaste;
 
+  if (currentLevel.printOption_s == "none") {
+    return;
+  }
+
   if (currentLevel.printOption_s == "description") {
     toPaste = currentSection.description_s;
   }
 
   if (currentLevel.printOption_s == "percent") {
-    toPaste = currentSection.percentageArc_i.toString() + "%";
+    toPaste = currentSection.percentageArcData_i.toString() + "%";
   }
 
   this.ctx.beginPath();
@@ -240,7 +288,6 @@ StackedWheel.prototype.pastePieText = function(levelID, sectionID) {
 };
 
 StackedWheel.prototype.drawWheel = function() {
-  this.recursivelyLoopAndGrabDataForCalculationsAndOrdering();
   if(this.animation_b == true) {
     this.animationCycler();
   } else {
@@ -248,7 +295,6 @@ StackedWheel.prototype.drawWheel = function() {
     for (var i = 0; i < this.layersWithSectionData_a_o.length; i++) {
       sectionIDs[i] = this.layersWithSectionData_a_o[i].sections.length
     }
-
     this.pastePreviouslyPasted(sectionIDs);
   }
 };
@@ -325,6 +371,14 @@ StackedWheel.prototype.errorChecks = function() {
 
 // ANIMATION RESTRUCTURING. Get all levels to complete at the same time. This would be really nice.
 
+// Figure out how to control time in animations
+
 // Maybe make the text or data representation responsivly size depending on section size.
 
 // Maybe make first layer text a bit furthur out depending on how big the donut hole is. If you think about it, if there is no donut hole, the middle of the section will be very thin becuase it closes in on a point at the center of the circle. This is something to think about.
+
+// create validations for everything. This one will be tricky becuase validations for a section in the 3rd level require info from the first 2 levels.
+
+// Maybe add a center hole that can fill with color.
+
+// Make a minimum percent for first level.

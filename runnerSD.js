@@ -1,4 +1,4 @@
-// DO NOT TOUCH THIS DATA MODEL.
+// Three layers.
 var data = {
   data: [
   {
@@ -209,8 +209,8 @@ var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanv
     options: {
       layers: [
         {
-          minimumWidth_i: 70,
-          maximumWidth_i: 70,
+          minimumWidth_i: 90,
+          maximumWidth_i: 90,
           textColor_s: "white",
           textFont_s: '10pt Helvetica',
           blurColor_s: "black",
@@ -218,8 +218,8 @@ var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanv
           colorScheme_a_s: ["#ff5b8e", "#98307b", "#662169", "#008baf", "#00ae85", "#8bb229"]
         },
         {
-          minimumWidth_i: 70,
-          maximumWidth_i: 70,
+          minimumWidth_i: 50,
+          maximumWidth_i: 50,
           textColor_s: "white",
           textFont_s: '10pt Helvetica',
           blurColor_s: "black",
@@ -227,8 +227,8 @@ var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanv
           colorScheme_a_s: ["#ff5b8e", "#98307b"]
         },
         {
-          minimumWidth_i: 70,
-          maximumWidth_i: 70,
+          minimumWidth_i: 50,
+          maximumWidth_i: 50,
           textColor_s: "white",
           textFont_s: '10pt Helvetica',
           blurColor_s: "black",

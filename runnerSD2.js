@@ -1,9 +1,9 @@
-// DO NOT TOUCH THIS DATA MODEL.
+// 2 layers
 var data = {
   data: [
   {
     description_s: "LR0SEC0",
-    percentageArc_i: 25,
+    percentageArc_i: 20,
     data: [
       {
         description_s: 'LR1SEC0',
@@ -12,7 +12,7 @@ var data = {
       },
       {
         description_s: 'LR1SEC1',
-        percentageArc_i: 50,
+        percentageArc_i: 20,
 
       }
     ]
@@ -28,7 +28,7 @@ var data = {
       },
       {
         description_s: 'LR1SEC3',
-        percentageArc_i: 50,
+        percentageArc_i: 20,
 
       }
     ]
@@ -100,7 +100,7 @@ var data = {
 ]
 };
 
-var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanvas"),
+var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanvas2"),
   {
     type: 'stacked-wheel',
     data: {
@@ -124,10 +124,10 @@ var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanv
           textFont_s: '10pt Helvetica',
           blurColor_s: "white",
           printOption_s: "percent",
-          colorScheme_a_s: ["#00ae85", "#8bb229"]
+          colorScheme_a_s: ["#662169", "#8bb229"]
         }
       ],
-      initialRadius_i: 70,
+      initialRadius_i: 80,
       radiusPop_i: 0,
       animation_b: true,
       animationSpeed_i: 6,
