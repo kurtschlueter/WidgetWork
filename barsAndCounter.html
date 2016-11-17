@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
+
+    <style>
+      .widget {
+        width: 850px;
+        height: 810px;
+      }
+
+      #singleValueBarContainer {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        border:2px solid blue;
+        align-items: center;
+      }
+
+      #singleValueBarNonCanvasContainer {
+        text-align:center;
+        justify-content: flex-start;
+        /*border:2px solid purple;*/
+        width: 50%;
+        height: 50%;
+        margin-right: 5%;
+        margin-left: 5%;
+      }
+
+      #singleValueBarTitle {
+        color: #8bb229;
+        /*border:2px solid green;*/
+        font-size: 1em;
+        justify-content:center;
+        margin-bottom: 5%;
+      }
+
+      #singleValueBarCounter{
+        justify-content:center;
+        /*border:2px solid orange;*/
+        text-align:center;
+        color: #8bb229;
+        font-size: 2em;
+      }
+
+      #singleValueBarCanvasContainer {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      #singleValueBarCanvas {
+        justify-content: flex-end;
+        width: 33%;
+        /*border:2px solid red;*/
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <div class="widget">
+      <div id="singleValueBarContainer">
+        <div id="singleValueBarNonCanvasContainer">
+          <div id="singleValueBarTitle"> TOTAL SPEND </div>
+          <div id="singleValueBarCounter">
+            <span id="singleValueBarPrefix"></span>
+            <span id="singleValueBarValue"></span>
+            <span id="singleValueBarSufix"></span>
+          </div>
+        </div>
+        <div id="singleValueBarCanvasContainer">
+          <canvas id="singleValueBarCanvas" width="120%" height="50%"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script src="countUp.js"></script>
+    <script src="fuckyou.js"></script>
+    <!-- // <script src="runnerBarsCounter.js"></script> -->
+
+  </body>
+</html>
+
+
+

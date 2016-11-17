@@ -1,6 +1,6 @@
  // StackedWheel object takes in two properties; an elementID to identify the canvas container in the DOM, and a json object that contains the data that will populate value along with the settings.
-function ValuePresenter(elementDOM, settingsJSON) {
-// console.log(elementDOM)
+function ValuePresenter3(elementDOM, settingsJSON) {
+console.log(elementDOM)
   this.settingsJSON = settingsJSON;
   this.elementDOM = elementDOM;
   this.ctx = this.elementDOM.getContext("2d");

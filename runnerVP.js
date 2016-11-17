@@ -46,7 +46,6 @@ var newValuePresenter2 = new ValuePresenter(document.getElementById("totalLeadsC
   }
 );
 
-
 newValuePresenter2.drawPresenter();
 
 var data3 = {

@@ -2,38 +2,8 @@
 var data = {
   data: [
   {
-    description_s: "LR0SEC0",
-    percentageArc_i: 25,
-    data: [
-      {
-        description_s: 'LR1SEC0',
-        percentageArc_i: 50,
-        data: [
-          {
-            description_s: 'LR2SEC0',
-            percentageArc_i: 100
-          }
-        ]
-      },
-      {
-        description_s: 'LR1SEC1',
-        percentageArc_i: 50,
-        data: [
-          {
-            description_s: 'LR2SEC1',
-            percentageArc_i: 50
-          },
-          {
-            description_s: 'LR2SEC2',
-            percentageArc_i: 50
-          }
-        ]
-      }
-    ]
-  },
-  {
     description_s: "LR0SEC1",
-    percentageArc_i: 13,
+    percentageArc_i: 30,
     data: [
       {
         description_s: 'LR1SEC2',
@@ -97,7 +67,7 @@ var data = {
   },
   {
     description_s: "LR0SEC3",
-    percentageArc_i: 16,
+    percentageArc_i: 15,
     data: [
       {
         description_s: 'LR1SEC6',
@@ -131,7 +101,7 @@ var data = {
   },
   {
     description_s: "LR0SEC4",
-    percentageArc_i: 14,
+    percentageArc_i: 15,
     data: [
       {
         description_s: 'LR1SEC8',
@@ -165,7 +135,7 @@ var data = {
   },
   {
     description_s: "LR0SEC5",
-    percentageArc_i: 17,
+    percentageArc_i: 25,
     data: [
       {
         description_s: 'LR1SEC10',
@@ -200,47 +170,73 @@ var data = {
 ]
 };
 
-var newStackedWheel = new StackedWheel(document.getElementById("stackedWheelCanvas"),
+var newStackedWheel = new DynamicWheel(document.getElementById("stackedWheelCanvas3"),
   {
     type: 'stacked-wheel',
+    innerDescription_s: "none",
     data: {
         sections: data,
     },
     options: {
+
       layers: [
         {
-          minimumWidth_i: 90,
-          maximumWidth_i: 90,
+          minimumWidth_i: 60,
+          maximumWidth_i: 60,
           textColor_s: "white",
-          textFont_s: '10pt Helvetica',
-          blurColor_s: "black",
-          printOption_s: "description",
-          colorScheme_a_s: ["#ff5b8e", "#98307b", "#662169", "#008baf", "#00ae85", "#8bb229"]
+          textFont_s: '8pt FontAwesome',
+          // textFont_s: '10pt Helvetica',
+          sectionShadowColor_s: "grey",
+          sectionShadowThickness_s: 1,
+          textShadowThickness_s: 0,
+          textShadowColor_s: "none", // none is prob redundant. if thickness is zero then thats good enough
+          printOption_s: "description", // description, percent, parent-percent, icon
+          colorSchemeType_s: 'custom', // custom, parent-color-range
+          colorScheme_a_s: ["hsla(321, 70%, 56%, 1)", "hsla(192, 100%, 34%, 1)", "hsla(218, 66%, 43%, 1)", "hsla(166, 100%, 34%, 1)", "hsla(77, 63%, 43%, 1)"]
         },
         {
           minimumWidth_i: 50,
           maximumWidth_i: 50,
           textColor_s: "white",
-          textFont_s: '10pt Helvetica',
-          blurColor_s: "black",
-          printOption_s: "percent",
-          colorScheme_a_s: ["#ff5b8e", "#98307b"]
+          textFont_s: '10pt FontAwesome',
+          // textFont_s: '10pt Helvetica',
+          sectionShadowColor_s: "grey",
+          sectionShadowThickness_s: 1,
+          textShadowThickness_s: 0,
+          textShadowColor_s: "none", // none is prob redundant. if thickness is zero then thats good enough
+          printOption_s: "percent", // description, percent, parent-percent, icon
+          colorSchemeType_s: 'parent-color-range', // custom, parent-color-range
+          colorScheme_a_s: ["hsla(321, 70%, 56%, 1)", "hsla(192, 100%, 34%, 1)", "hsla(218, 66%, 43%, 1)", "hsla(166, 100%, 34%, 1)", "hsla(77, 63%, 43%, 1)"]
         },
         {
           minimumWidth_i: 50,
           maximumWidth_i: 50,
           textColor_s: "white",
-          textFont_s: '10pt Helvetica',
-          blurColor_s: "black",
-          printOption_s: "percent",
-          colorScheme_a_s: ["#662169", "#008baf"]
+          textFont_s: '10pt FontAwesome',
+          // textFont_s: '10pt Helvetica',
+          sectionShadowColor_s: "grey",
+          sectionShadowThickness_s: 1,
+          textShadowThickness_s: 0,
+          textShadowColor_s: "none", // none is prob redundant. if thickness is zero then thats good enough
+          printOption_s: "percent", // description, percent, parent-percent, icon
+          colorSchemeType_s: 'parent-color-range', // custom, parent-color-range
+          colorScheme_a_s: ["hsla(321, 70%, 56%, 1)", "hsla(192, 100%, 34%, 1)", "hsla(218, 66%, 43%, 1)", "hsla(166, 100%, 34%, 1)", "hsla(77, 63%, 43%, 1)"]
         }
       ],
-      initialRadius_i: 70,
+      initialRadius_i: 50,
+      innerText_b: false,
+      centeredCircle_b: false,
+      centeredCircleColor_s: 'white',
+      centeredCircleShadowThickness_s: 10,
+      centeredCircleShadowColor_s: "red",
+      innerTextColor_s: "black",
+      innerTextFont_s: '10pt Helvetica',
+      innerTextShadowThickness_s: 0,
+      innerTextShadowColor_s: "none",
       radiusPop_i: 0,
       animation_b: true,
       animationSpeed_i: 6,
-      containerSize_a_i: [500, 500]
+      containerSize_a_i: [375, 375]
     }
   }
 );
