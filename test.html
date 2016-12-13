@@ -1,76 +1,103 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      body {
-        margin: 0px;
-        padding: 0px;
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="myCanvas" width="578" height="200"></canvas>
-    <script>
-      window.requestAnimFrame = (function(callback) {
-        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-        function(callback) {
-          window.setTimeout(callback, 1000 / 60);
-        };
-      })();
+<head>
+  <meta charset="UTF-8">
+  <title></title>
 
-      function drawRectangle(myRectangle, context) {
-        context.beginPath();
-        context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
-        context.fillStyle = '#8ED6FF';
-        context.fill();
-        context.lineWidth = myRectangle.borderWidth;
-        context.strokeStyle = 'black';
-        context.stroke();
-      }
-      function animate(myRectangle, canvas, context, startTime) {
-        // update
-        var time = (new Date()).getTime() - startTime;
+  <style>
 
-        // pixels / second^2
-        var gravity = 200;
+    .externalContainer {
+      height: 400px;
+      width: 600px;
+    }
 
-        myRectangle.y = 0.5 * gravity * Math.pow(time / 1000, 2);
+    .pieChartPreviousWidgetContainer {
+      height: 100%;
+      width: 100%;
+      border: 2px solid red;
+    }
 
-        if(myRectangle.y > canvas.height - myRectangle.height - myRectangle.borderWidth / 2) {
-          myRectangle.y = canvas.height - myRectangle.height - myRectangle.borderWidth / 2;
-        }
-        lastTime = time;
+    .piechartpreviousGraphContainer {
+      height: 80%;
+      width: 100%;
+      border: 2px solid yellow;
+    }
 
-        // clear
-        context.clearRect(0, 0, canvas.width, canvas.height);
+    .piechartpreviousGraphCanvas {
 
-        // draw
-        drawRectangle(myRectangle, context);
+    }
 
-        // request new frame
-        requestAnimFrame(function() {
-          animate(myRectangle, canvas, context, startTime);
-        });
-      }
-      var canvas = document.getElementById('myCanvas');
-      var context = canvas.getContext('2d');
+    .piechartpreviousComparisonContainer {
+      height: 20%;
+      width: 100%;
+      border: 2px solid orange;
 
-      var myRectangle = {
-        x: 239,
-        y: 0,
-        width: 100,
-        height: 50,
-        borderWidth: 5
-      };
+    }
 
-      drawRectangle(myRectangle, context);
+    .pieChartPreviousComparisonEndpoint {
+      width: 49%;
+      height: 98%;
+      border: 2px solid blue;
+      display: inline-block;
+            vertical-align: middle;
 
-      // wait one second before dropping rectangle
-      setTimeout(function() {
-        var startTime = (new Date()).getTime();
-        animate(myRectangle, canvas, context, startTime);
-      }, 2000);
+    }
 
-    </script>
-  </body>
+    .piechartpreviousComparisonTitle {
+      width: 47%;
+      height: 98%;
+      border: 2px solid green;
+      display: inline-block;
+            vertical-align: middle;
+    }
+
+    .piechartpreviousComparisonValues {
+      width: 47%;
+      height: 98%;
+      border: 2px solid purple;
+      display: inline-block;
+            vertical-align: middle;
+    }
+
+  </style>
+
+
+</head>
+<body>
+<div class="externalContainer">
+  <div class="pieChartPreviousWidgetContainer">
+
+    <div class="piechartpreviousGraphContainer">
+      <div class="piechartpreviousGraphCanvas">
+        Yes
+      </div>
+    </div>
+
+    <div class="piechartpreviousComparisonContainer">
+
+      <div class="pieChartPreviousComparisonEndpoint">
+        <div class="piechartpreviousComparisonTitle">
+          Fucking Hell1
+        </div>
+
+        <div class="piechartpreviousComparisonValues">
+          fuckinghell values 1
+        </div>
+      </div>
+
+      <div class="pieChartPreviousComparisonEndpoint">
+        <div class="piechartpreviousComparisonTitle">
+          Fucking Hell2
+        </div>
+
+        <div class="piechartpreviousComparisonValues">
+          fuckinghell values 1
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
 </html>

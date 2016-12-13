@@ -22,10 +22,10 @@ function DynamicWheel(elementDOM, settingsJSON) {
   this.radiusPop_i = this.settingsJSON.options.radiusPop_i;
 
   // These properties control the inner circle fill and text properties.
-  this.innerDescription_s = this.settingsJSON.innerDescription_s;
+  this.innerDescriptions_s = this.settingsJSON.innerDescriptions_s;
   this.innerText_b = this.settingsJSON.options.innerText_b;
   this.innerTextColor_s = this.settingsJSON.options.innerTextColor_s;
-  this.innerTextFont_s = this.settingsJSON.options.innerTextFont_s;
+  this.innerTextFonts_a_s = this.settingsJSON.options.innerTextFonts_a_s;
   this.innerTextShadowThickness_s = this.settingsJSON.options.innerTextShadowThickness_s;
   this.innerTextShadowColor_s = this.settingsJSON.options.innerTextShadowColor_s;
   this.centeredCircle_b = this.settingsJSON.options.centeredCircle_b;
@@ -47,7 +47,7 @@ function DynamicWheel(elementDOM, settingsJSON) {
 // I did this for the first level only. This might need to get integrated somehow into all levels. But for now this is good. WHat this function does is to set a minimum for the minimum arc radial span. We do not want a piece of the pie that is 1% of the data to only be visually 1%. I think I have to minimum at 10%. This returns an array of percentages that will line up with every section in the first layer. You are on you rown for the following layers.
 DynamicWheel.prototype.level1PercentageAdjuster  = function() {
 
-  var minAllowableArcLength = 10;
+  var minAllowableArcLength = 8;
   var cachedNeededPercentageCount = 0;
   var numberOfSections = this.sections_a_o.data.length;
   var currentPercentages_a_i = []
@@ -156,10 +156,10 @@ DynamicWheel.prototype.setLevelProperties  = function(level) {
   currentLevel.colorSchemeType_s = this.settingsJSON.options.layers[level].colorSchemeType_s;
   currentLevel.lineAttachment_b = this.settingsJSON.options.layers[level].lineAttachment_b;
   currentLevel.lineAttachmentThickness_i = this.settingsJSON.options.layers[level].lineAttachmentThickness_i;
-  currentLevel.atttachedPrintOption_s = this.settingsJSON.options.layers[level].atttachedPrintOption_s;
+  currentLevel.attachedPrintOptions_s = this.settingsJSON.options.layers[level].attachedPrintOptions_s;
   currentLevel.lineAttachmentColor_s = this.settingsJSON.options.layers[level].lineAttachmentColor_s;
   currentLevel.attachmentTextColor_s = this.settingsJSON.options.layers[level].attachmentTextColor_s;
-  currentLevel.attachmentTextFont_s = this.settingsJSON.options.layers[level].attachmentTextFont_s;
+  currentLevel.attachmentTextFonts_s = this.settingsJSON.options.layers[level].attachmentTextFonts_s;
   currentLevel.lineAttachmentLength_i = this.settingsJSON.options.layers[level].lineAttachmentLength_i;
 }
 
@@ -452,14 +452,37 @@ DynamicWheel.prototype.pasteCenterOptions = function(levelID, sectionID) {
     this.ctx.fill();
     this.ctx.closePath();
   }
+
   if (this.innerText_b == true) {
-    this.ctx.beginPath();
-    this.ctx.fillStyle = this.innerTextColor_s;
-    this.ctx.font = this.innerTextFont_s;
-    this.ctx.shadowBlur = this.innerTextShadowThickness_s;
-    this.ctx.shadowColor = this.innerTextShadowColor_s;
-    this.ctx.fillText(this.innerDescription_s, this.containerSize_a_i[0] / 2, this.containerSize_a_i[1] / 2);
-    this.ctx.closePath();
+    var centeredTextAdjustedX;
+    var centeredTextAdjustedY;
+
+    var fontSizes = [];
+    var totalFontHeight = 0;
+    var largestFontSize = 0;
+    var currentFontSize;
+    var buffer = 10;
+
+    for (var i = 0; i < this.innerTextFonts_a_s.length; i++) {
+      currentFontSize = parseInt(this.innerTextFonts_a_s[i].match(/\d/g).join(""));
+      fontSizes.push(currentFontSize);
+      if (currentFontSize > largestFontSize) { largestFontSize = currentFontSize };
+      totalFontHeight = totalFontHeight + currentFontSize;
+    }
+
+    var avgFontSize = totalFontHeight / this.innerTextFonts_a_s.length;
+
+    for (var ii = 0; ii < this.innerDescriptions_s.length; ii++) {
+
+      this.ctx.beginPath();
+      this.ctx.fillStyle = this.innerTextColor_s;
+      this.ctx.font = this.innerTextFonts_a_s[ii];
+      this.ctx.shadowBlur = this.innerTextShadowThickness_s;
+      this.ctx.shadowColor = this.innerTextShadowColor_s;
+      this.ctx.fillText(this.innerDescriptions_s[ii], this.containerSize_a_i[0] / 2, this.containerSize_a_i[1] / 2 + (largestFontSize + buffer) * ii - totalFontHeight/2 + buffer);
+      this.ctx.closePath();
+
+    }
   }
 }
 
@@ -467,14 +490,6 @@ DynamicWheel.prototype.pasteLineExtensions = function(levelID, sectionID) {
   // debugger
   var currentLevel = this.layersWithSectionData_a_o[levelID];
   var currentSection = currentLevel.sections[sectionID];
-// debugger
-
-
-  // // currentLevel.lineAttachment_b = this.settingsJSON.options.layers[level].lineAttachment_b;
-  // // currentLevel.atttachedPrintOption_s = this.settingsJSON.options.layers[level].atttachedPrintOption_s;
-  // currentLevel.lineAttachmentColor_s = this.settingsJSON.options.layers[level].lineAttachmentColor_s;
-  // // currentLevel.attachmentTextColor_s = this.settingsJSON.options.layers[level].attachmentTextColor_s;
-  // currentLevel.attachmentTextFont_s = this.settingsJSON.options.layers[level].attachmentTextFont_s;
 
   if (currentLevel.lineAttachment_b == true) {
     this.ctx.beginPath();
@@ -487,15 +502,52 @@ DynamicWheel.prototype.pasteLineExtensions = function(levelID, sectionID) {
 
     this.ctx.fillStyle = currentLevel.attachmentTextColor_s;
     this.ctx.textBaseline = currentSection.lineTextBaselineProperty_s;
-    this.ctx.font = currentLevel.attachmentTextFont_s;
-
+    var buffer = 5;
+    var fontSize;
+    var prevFontSize = 0;
     var toPaste;
-    if (currentLevel.atttachedPrintOption_s == 'description') {
-      toPaste = currentSection.description_s;
-    }
+    var xPositioning;
+    var yPositioning;
 
-    this.ctx.fillText(toPaste, currentSection.lineCoords_a_i[2][0], currentSection.lineCoords_a_i[2][1]);
-    this.ctx.closePath();
+// debugger
+    for (var i = 0 ; i < currentLevel.attachedPrintOptions_s.length ; i++) {
+
+      if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI) {
+
+        this.ctx.font = currentLevel.attachmentTextFonts_s[currentLevel.attachedPrintOptions_s.length - 1 - i];
+        fontSize = parseInt(currentLevel.attachmentTextFonts_s[currentLevel.attachedPrintOptions_s.length - 1 - i].match(/\d/g).join(""));
+
+        if (currentLevel.attachedPrintOptions_s[currentLevel.attachedPrintOptions_s.length - 1 - i] == 'description') {
+          toPaste = currentSection.description_s;
+        }
+
+        if (currentLevel.attachedPrintOptions_s[currentLevel.attachedPrintOptions_s.length - 1 - i] == 'percentage') {
+          toPaste = currentSection.percentageArcData_i.toString() + "%";
+        }
+        xPositioning = currentSection.lineCoords_a_i[2][0];
+        yPositioning = currentSection.lineCoords_a_i[2][1] - (i * (prevFontSize + buffer));
+
+      } else {
+// debugger
+        this.ctx.font = currentLevel.attachmentTextFonts_s[i];
+        fontSize = parseInt(currentLevel.attachmentTextFonts_s[i].match(/\d/g).join(""));
+
+        if (currentLevel.attachedPrintOptions_s[i] == 'description') {
+          toPaste = currentSection.description_s;
+        }
+
+        if (currentLevel.attachedPrintOptions_s[i] == 'percentage') {
+          toPaste = currentSection.percentageArcData_i.toString() + "%";
+        }
+        xPositioning = currentSection.lineCoords_a_i[2][0];
+        yPositioning = currentSection.lineCoords_a_i[2][1] + (i * (prevFontSize + buffer));
+      }
+
+      prevFontSize = fontSize;
+
+      this.ctx.fillText(toPaste, xPositioning, yPositioning);
+      this.ctx.closePath();
+    }
     this.ctx.textBaseline = "alphabetic";
   }
 }
@@ -601,3 +653,11 @@ DynamicWheel.prototype.errorChecks = function() {
 // Need an error check or some validation that if the number of level 1 sections is more than 10, the minimum for arc length has to be dropped. Maybe we just don't allow over 10. I don't know.
 
 // error: double stack not working as expected. if i do 20 40 min max for level 1 and 20 40 min max for level 2, desired results are not what you would expect. Outside not getting stacked. Nevermind. this works. it can only stack per parent section, meaning if a parent sction has three children, the three will stack in upper levels. BUt they cannot stack across parent sections.
+
+// inner text array needs to match font array for same texts. Also, maybe create a color array since we are already doing the work
+
+// right now the center text starts vertically in the middle. It needs to be shifted up depending on how many rows of text want to be displaid.
+
+// the stack of text extended by lines outside wheel should also have text length and font array length checks. As well as color options just like the center circl text.
+
+// fix spacing for centered text. right now I think it is just the max font size. WHatever.
