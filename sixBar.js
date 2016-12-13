@@ -2,10 +2,11 @@ function AnonymousBars(elementDOM, settingsJSON) {
 
   this.settingsJSON = settingsJSON;
   this.elementDOM = elementDOM;
-  this.ctx = this.elementDOM.getContext("2d");
+  this.setScreenForPixels();
 
-  this.elementDOM.width  = this.settingsJSON.options.containerSize_a_i[0];
-  this.elementDOM.height = this.settingsJSON.options.containerSize_a_i[1];
+  this.ctx = this.elementDOM.getContext("2d");
+  this.ctx.scale(2,2);
+
 
   this.dataArray = this.settingsJSON.data;
   this.graphBarColor_s  = this.settingsJSON.options.graphBarColor_s;
@@ -19,6 +20,16 @@ function AnonymousBars(elementDOM, settingsJSON) {
   this.containerSize_a_i = this.settingsJSON.options.containerSize_a_i;
 
 }
+
+AnonymousBars.prototype.setScreenForPixels = function() {
+
+ this.elementDOM.width  = (this.settingsJSON.options.containerSize_a_i[0] * 2);
+ this.elementDOM.height = (this.settingsJSON.options.containerSize_a_i[1] * 2);
+
+ this.elementDOM.style.width  = this.settingsJSON.options.containerSize_a_i[0].toString() + "px";
+ this.elementDOM.style.height = this.settingsJSON.options.containerSize_a_i[1].toString() + "px";
+
+};
 
 AnonymousBars.prototype.calculateMargins = function() {
   var numberOfBars = this.dataArray.length;
@@ -114,7 +125,7 @@ AnonymousBars.prototype.pasteGraph = function(numberOfBars) {
 AnonymousBars.prototype.animationCycler = function(incrementer, numberOfBars) {
   var sixBarsThis = this;
   var maxIncrementValue = 1000;
-  var numberOfDivisions = this.dataArray.length + 2;
+  var numberOfDivisions = this.dataArray.length + 1;
   var evenIncrementDivide = maxIncrementValue / numberOfDivisions;
 
   var incrementer = (typeof incrementer === 'undefined') ? 0 : incrementer;
@@ -124,30 +135,11 @@ AnonymousBars.prototype.animationCycler = function(incrementer, numberOfBars) {
 
   this.ctx.clearRect(0, 0, this.containerSize_a_i[0], this.containerSize_a_i[1]);
 
-
-
-  // if (incrementer > evenIncrementDivide * 0 && incrementer <= evenIncrementDivide * 1) { this.pasteGraph(0); }
-
-  // if (incrementer > evenIncrementDivide * 1 && incrementer <= evenIncrementDivide * 2) { this.pasteGraph(1); }
-
-  // if (incrementer > evenIncrementDivide * 2 && incrementer <= evenIncrementDivide * 3) { this.pasteGraph(2); }
-
-  // if (incrementer > evenIncrementDivide * 3 && incrementer <= evenIncrementDivide * 4) { this.pasteGraph(3); }
-
-  // if (incrementer > evenIncrementDivide * 4 && incrementer <= evenIncrementDivide * 5) { this.pasteGraph(4); }
-
-  // if (incrementer > evenIncrementDivide * 5 && incrementer <= evenIncrementDivide * 6) { this.pasteGraph(5); }
-
-  // if (incrementer > evenIncrementDivide * 6) { this.pasteGraph(6); }
-
   for (var x = 0 ; x < (numberOfDivisions) ; x++) {
 
     if (incrementer > evenIncrementDivide * x && incrementer <= evenIncrementDivide * (x + 1)) { this.pasteGraph(x); }
 
   }
-
-  // this.pasteGraph();
-
 
   incrementer = incrementer + 5;
   if (incrementer  <= maxIncrementValue) {
