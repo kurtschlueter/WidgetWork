@@ -3,7 +3,7 @@ var dataDoubleLayer = {
       {
         description_s: "microphone",
         iconUnicode_s: '\uf130',
-        percentageArc_i: 20,
+        percentageArc_i: 4,
         data: [
           {
             description_s: 'LR1SEC0',
@@ -20,7 +20,7 @@ var dataDoubleLayer = {
       {
         description_s: "desktop",
         iconUnicode_s: '\uf108',
-        percentageArc_i: 20,
+        percentageArc_i: 36,
         data: [
           {
             description_s: 'LR1SEC2',
@@ -59,7 +59,7 @@ var dataDoubleLayer = {
       {
         description_s: "list",
         iconUnicode_s: '\uf022',
-        percentageArc_i: 20,
+        percentageArc_i: 4,
         data: [
           {
             description_s: 'LR1SEC6',
@@ -76,7 +76,7 @@ var dataDoubleLayer = {
       {
         description_s: "tv",
         iconUnicode_s: '\uf26c',
-        percentageArc_i: 20,
+        percentageArc_i: 36,
         data: [
           {
             description_s: 'LR1SEC1',
@@ -108,11 +108,12 @@ var newDoubleLayerWheel = new DynamicWheel(document.getElementById("dynamicWheel
                   textShadowThickness_s: 0,
                   textShadowColor_s: "none", // none is prob redundant. if thickness is zero then thats good enough
                   printOption_s: "icon", // description, percent, parent-percent, icon
+                  printLocationIfUnderPercent_s: "none", // attached, centered, none. Right now the percentage is 5% hardcoded.
                   colorSchemeType_s: 'custom', // custom, parent-color-range
                   colorScheme_a_s: ["hsla(316, 83%, 47%, 1)", "hsla(192, 100%, 34%, 1)", "hsla(218, 66%, 43%, 1)", "hsla(166, 100%, 34%, 1)", "hsla(75, 99%, 30%, 1)"],
                   lineAttachment_b: false,
-                  lineAttachmentLength_i: 0,
-                  atttachedPrintOption_s: 'description',
+                  lineAttachmentLength_i: 30,
+                  attachedPrintOptions_s: ['description'],
                   lineAttachmentColor_s: 'black',
                   attachmentTextColor_s: 'black',
                   attachmentTextFont_s: '12pt MetropolisRegular',
@@ -128,8 +129,16 @@ var newDoubleLayerWheel = new DynamicWheel(document.getElementById("dynamicWheel
                textShadowThickness_s: 0,
                textShadowColor_s: "none",
                printOption_s: "parent-percent",
+               printLocationIfUnderPercent_s: "attached", // attached, centered, none. Right now the percentage is 5% hardcoded.
                colorSchemeType_s: "parent-color-range", // if parent-color-range, then color array below is irrelevent
-               colorScheme_a_s: ["hsla(317, 52%, 39%, 1)", "hsla(298, 52%, 27%, 1)"]
+               colorScheme_a_s: ["hsla(317, 52%, 39%, 1)", "hsla(298, 52%, 27%, 1)"],
+               lineAttachment_b: true,
+               lineAttachmentLength_i: 50,
+               attachedPrintOptions_s: [],
+               lineAttachmentColor_s: 'black',
+               attachmentTextColor_s: 'black',
+               attachmentTextFont_s: '12pt MetropolisRegular',
+               lineAttachmentThickness_i: 1,
              }
            ],
            initialRadius_i: 75,
@@ -144,8 +153,9 @@ var newDoubleLayerWheel = new DynamicWheel(document.getElementById("dynamicWheel
            innerTextShadowColor_s: "none",
            radiusPop_i: -1,
            animation_b: true,
-           animationSpeed_i: 6,
-           containerSize_a_i: [390, 390]
+           animationSpeed_i: 2,
+           minAllowableArcLength_i: 0, // this only works for level 1 for now. We would have to move this into the level layer and add extra qualifications if we wanted to add this functionality for other layers.
+           containerSize_a_i: [600, 600]
          }
    }
 );

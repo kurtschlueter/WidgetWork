@@ -1,19 +1,22 @@
  // DynamicWheel object takes in two properties; an elementID to identify the canvas container in the DOM, and a json object that contains the data that will populate the wheel along with the settings.
 function DynamicWheel(elementDOM, settingsJSON) {
 
-  this.minSecLength = 4; // min section length that triggers line attachment
+  //special object with data for special extensions
+  this.specialExtensionData = [];
+
+  this.minSecLength = 5; // min section length that triggers line attachment
   this.settingsJSON = settingsJSON;
 
   // Reference to element in DOM and launching canvas context. All static properties of ctx also defined here.
   this.elementDOM = elementDOM;
 
-  this.elementDOM.width  = this.settingsJSON.options.containerSize_a_i[0];
-  this.elementDOM.height = this.settingsJSON.options.containerSize_a_i[1];
+  // this.elementDOM.width  = this.settingsJSON.options.containerSize_a_i[0];
+  // this.elementDOM.height = this.settingsJSON.options.containerSize_a_i[1];
 
-  this.elementDOM.width  = 1000;
-  this.elementDOM.height = 1000;
-  this.elementDOM.style.width = "500px";
-  this.elementDOM.style.height = "500px";
+  this.elementDOM.width  = 1200;
+  this.elementDOM.height = 1200;
+  this.elementDOM.style.width = "600px";
+  this.elementDOM.style.height = "600px";
 
   // this.elementDOM.width  = 400;
   // this.elementDOM.height = 400;
@@ -154,6 +157,25 @@ DynamicWheel.prototype.recursivelyLoopAndGrabDataForCalculationsAndOrdering  = f
   }
 }
 
+// Here is where I fill special extention properties object
+DynamicWheel.prototype.setSpecialExtensionProperties  = function(level, section) {
+  var currentLevel = this.layersWithSectionData_a_o[level];
+  var currentSection = currentLevel.sections[section];
+
+//   if (level == 1 && currentSection.previousContainerPercentageScopeView_i <= this.minSecLength) {
+
+//     if current section is a starterStatus_b
+
+//       generate line coordinates
+
+
+
+//   }
+
+// // this.specialExtensionData
+// debugger
+}
+
 // Here I am setting the properties for each level... color schemes, display preferences, etc..
 DynamicWheel.prototype.setLevelProperties  = function(level) {
   var currentLevel = this.layersWithSectionData_a_o[level];
@@ -174,7 +196,7 @@ DynamicWheel.prototype.setLevelProperties  = function(level) {
 
 // This used to be set for levels but I changed it. The reason is for small arc length sections (like under 10%). These need to be triggered at the section level.
 DynamicWheel.prototype.setSectionLineAttachmentProperties  = function(level, section) {
-  console.log('here')
+  console.log(level)
   var currentLevel = this.layersWithSectionData_a_o[level];
   var currentSection = currentLevel.sections[section];
 
@@ -186,7 +208,6 @@ DynamicWheel.prototype.setSectionLineAttachmentProperties  = function(level, sec
 
   // This is for the line attachment incase the arc length is too small. RIght now it is set for 4% hardcoded. We can have that as an option later.
   if (currentSection.globalPercentageArcView_i <= this.minSecLength && currentLevel.printLocationIfUnderPercent_s == 'attached') {
-    console.log('yes')
     currentSection.attachedPrintOptions_s = [currentLevel.printOption_s].concat(currentSection.attachedPrintOptions_s);
     currentSection.attachmentTextFonts_s = [currentLevel.textFont_s].concat(currentSection.attachmentTextFonts_s);
   }
@@ -546,13 +567,13 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
   // debugger
   var currentLevel = this.layersWithSectionData_a_o[levelID];
   var currentSection = currentLevel.sections[sectionID];
+  var toPaste;
 
-  if (currentSection.lineAttachment_b == true) {
+  if (currentSection.lineAttachment_b == true && currentSection.previousContainerPercentageScopeView_i >= this.minSecLength) {
 
     var buffer = 5;
     var fontSize;
     var prevFontSize = 0;
-    var toPaste;
     var xPositioning;
     var yPositioning;
 
@@ -562,7 +583,7 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
       this.ctx.beginPath();
       this.ctx.fillStyle = currentSection.attachmentTextColor_s;
       this.ctx.textBaseline = currentSection.lineTextBaselineProperty_s;
-
+      // debugger
       if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI) {
 
         this.ctx.font = currentSection.attachmentTextFonts_s[currentSection.attachedPrintOptions_s.length - 1 - i];
@@ -578,6 +599,10 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
 
         if (currentSection.attachedPrintOptions_s[currentSection.attachedPrintOptions_s.length - 1 - i] == 'value') {
           toPaste = currentSection.value_i.toString();
+        }
+
+        if (currentSection.attachedPrintOptions_s[currentSection.attachedPrintOptions_s.length - 1 - i] == 'parent-percent') {
+          toPaste = currentSection.globalPercentageArcData_i.toString() + "%";
         }
 
         xPositioning = currentSection.lineCoords_a_i[2][0];
@@ -600,6 +625,10 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
           toPaste = currentSection.value_i.toString();
         }
 
+        if (currentSection.attachedPrintOptions_s[i] == 'parent-percent') {
+          toPaste = currentSection.globalPercentageArcData_i.toString() + "%";
+        }
+
         xPositioning = currentSection.lineCoords_a_i[2][0];
         yPositioning = currentSection.lineCoords_a_i[2][1] + (i * (prevFontSize + buffer));
 
@@ -611,6 +640,64 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
       this.ctx.closePath();
     }
     this.ctx.textBaseline = "alphabetic";
+
+  } else if ( currentSection.lineAttachment_b == true && currentSection.previousContainerPercentageScopeView_i < this.minSecLength) {
+
+    var xPositioningIcon, xPositioningNext, yPositioningIcon, yPositioningNext, toPasteIcon, toPasteNext;
+
+    if ( currentSection.starterStatus_b == true) {
+        this.pasteLinesForExtention(levelID, sectionID);
+    }
+
+    this.ctx.beginPath();
+    this.ctx.font = this.layersWithSectionData_a_o[0].textFont_s;
+    this.ctx.fillStyle = 'black';
+
+    if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI) {
+
+      //if starter
+      if ( currentSection.starterStatus_b == true) {
+
+        this.ctx.textBaseline = "bottom";
+        xPositioningIcon = currentSection.lineCoords_a_i[2][0];
+        yPositioningIcon = currentSection.lineCoords_a_i[2][1];
+        toPasteIcon = this.layersWithSectionData_a_o[0].sections[currentSection.previousContainerSectionScope_i - 1].iconUnicode_s;
+        this.ctx.fillText(toPasteIcon, xPositioningIcon, yPositioningIcon);
+        // toPaste = 'cat';
+        // debugger
+      } else {
+        // this.ctx.textBaseline = "top";
+        // xPositioningNext = currentSection.lineCoords_a_i[2][0];
+        // yPositioningNext = currentSection.lineCoords_a_i[2][1] - 20;
+        // toPasteNext = 'cat'
+        // this.ctx.fillText(toPasteNext, xPositioningNext, yPositioningNext);
+
+      }
+
+    } else {
+
+      //if starter
+      if ( currentSection.starterStatus_b == true) {
+
+        this.ctx.textBaseline = "top";
+        xPositioningIcon = currentSection.lineCoords_a_i[2][0];
+        yPositioningIcon = currentSection.lineCoords_a_i[2][1];
+        toPasteIcon = this.layersWithSectionData_a_o[0].sections[currentSection.previousContainerSectionScope_i - 1].iconUnicode_s;
+        this.ctx.fillText(toPasteIcon, xPositioningIcon, yPositioningIcon);
+        // toPaste = 'cat';
+        // debugger
+      } else {
+
+        // this.ctx.textBaseline = "bottom";
+        // xPositioningNext = currentSection.lineCoords_a_i[2][0];
+        // yPositioningNext = currentSection.lineCoords_a_i[2][1] + 20;
+        // toPasteNext = 'dog';
+        // this.ctx.fillText(toPasteNext, xPositioningNext, yPositioningNext);
+      }
+
+    }
+    this.ctx.textBaseline = "alphabetic";
+    this.ctx.closePath();
   }
 }
 
@@ -628,98 +715,3 @@ DynamicWheel.prototype.drawWheel = function() {
   // debugger
 };
 
-// Some of these erros are aesthetics only. If you want you can override them by just commenting out the condition. For example, I have an error pop up if the chart is less than 40px, obviosuly you can have it smaller if you like.
-DynamicWheel.prototype.errorChecks = function() {
-
-  var errorMessages = [];
-
-  if (this.colorScheme_a_s[0].length < this.numberOfSections_i) {
-    errorMessages.push("Not enough colors to match sections of data")
-  };
-
-  if (this.innerRadius_i[0] < this.maximumWidth_i[0] / 2) {
-    errorMessages.push("innerRadius_i cannot be less than half of the maximumWidth_i")
-  };
-
-  if (this.maximumWidth_i[0] < this.minimumWidth_i[0]) {
-    errorMessages.push("maximumWidth_i cannot be less than the minimumWidth_i")
-  };
-
-  if (this.innerRadius_i[0] < 40) {
-    errorMessages.push("innerRadius_i cannot be less than 40")
-  };
-
-  if (this.maximumWidth_i[0] < 40) {
-    errorMessages.push("maximumWidth_i cannot be less than 40")
-  };
-
-  if (this.minimumWidth_i[0] < 40) {
-    errorMessages.push("minimumWidth_i cannot be less than 40")
-  };
-
-  if (this.containerSize_a_i[0] !== this.containerSize_a_i[0]) {
-    errorMessages.push("container size has to be a square (equal x and y)")
-  };
-
-  // Not super sure about this one
-  if (this.containerSize_a_i[0] < this.innerRadius_i[0] * 2 + (this.maximumWidth_i[0] / 2) * 2 + this.ctx.shadowBlur * 2) {
-    errorMessages.push("container might not fit your stacked wheel")
-  };
-
-  //if under a certain minWidth and innerRadius descriptions are not allowed. Only percentages.
-
-  // total percentage must be <= 100
-
-  // jSON needs to have proper values for all sections.
-
-  // animation speed should be limited to 1 to 10.
-
-  if (errorMessages.length > 0) {
-    this.elementDOM.style.width="500px";
-    this.elementDOM.style.height="500px";
-    this.ctx.font = '20pt Helvetica';
-    this.ctx.textAlign="center";
-    this.ctx.fillStyle = "red";
-    this.ctx.shadowBlur = 0;
-    this.ctx.beginPath();
-    this.ctx.fillText("ERRORS", this.containerSize_a_i[0] / 2, this.containerSize_a_i[1] / 9);
-    this.ctx.font = '10pt Helvetica';
-    for (var i = 0; i < errorMessages.length; i++) {
-      this.ctx.fillText(errorMessages[i], this.containerSize_a_i[0] / 2, this.containerSize_a_i[1] / 7 + i*15);
-    }
-    this.ctx.closePath();
-    return false
-  } else {
-    return true
-  }
-};
-
-// TODO ********************************
-
-// Figure out how to incorporate canvas div size manually here. Something is off when I try to get by id and change css.
-
-// ANIMATION RESTRUCTURING. Get all levels to complete at the same time. This would be really nice. One thing I just realized, the animation doesnt spin at the same rate throughout. Even for one level. It completes each section in the smae amount of time. So If I have one section that is 95% and it completes in 5 seconds. The next section (5%) will also take 5 seconds. THIS IS SO FRICKIN STUPID. What I can do/ should have done from the begining, is have some random variable increment at whatever rate I want until it reaches 2pi, and have every level reference that. Im such a dummy.
-
-// Figure out how to control time in animations
-
-// Maybe make the text or data representation responsivly size depending on section size.
-
-// Maybe make first layer text a bit furthur out depending on how big the donut hole is. If you think about it, if there is no donut hole, the middle of the section will be very thin becuase it closes in on a point at the center of the circle. This is something to think about.
-
-// create validations for everything. This one will be tricky becuase validations for a section in the 3rd level require info from the first 2 levels.
-
-// Maybe add a center hole that can fill with color.
-
-// Make a minimum percent for first level. DONE
-
-// Need an error check or some validation that if the number of level 1 sections is more than 10, the minimum for arc length has to be dropped. Maybe we just don't allow over 10. I don't know.
-
-// error: double stack not working as expected. if i do 20 40 min max for level 1 and 20 40 min max for level 2, desired results are not what you would expect. Outside not getting stacked. Nevermind. this works. it can only stack per parent section, meaning if a parent sction has three children, the three will stack in upper levels. BUt they cannot stack across parent sections.
-
-// inner text array needs to match font array for same texts. Also, maybe create a color array since we are already doing the work
-
-// right now the center text starts vertically in the middle. It needs to be shifted up depending on how many rows of text want to be displaid.
-
-// the stack of text extended by lines outside wheel should also have text length and font array length checks. As well as color options just like the center circl text.
-
-// fix spacing for centered text. right now I think it is just the max font size. WHatever.

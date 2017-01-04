@@ -33,13 +33,20 @@ AnonymousBars.prototype.getDataHeights = function() {
 
   var dataMinimum = Math.min.apply(null, this.dataArray);
   var dataMaximum = Math.max.apply(null, this.dataArray);
-  var slope = (this.maxBarHeight_i - this.minBarHeight_i) / (dataMaximum - dataMinimum);
+  if (dataMaximum == dataMinimum) {
+    var slope = 0;
+  } else {
+    var slope = (this.maxBarHeight_i - this.minBarHeight_i) / (dataMaximum - dataMinimum);
+  }
+
   var yIntercept = this.minBarHeight_i - slope * dataMinimum;
   this.dataHeights = [];
 
   for (var i = 0; i < this.dataArray.length; i++) {
     this.dataHeights[i] = slope * this.dataArray[i] + yIntercept;
   }
+
+  console.log(this.dataHeights)
   return this.dataHeights;
 };
 

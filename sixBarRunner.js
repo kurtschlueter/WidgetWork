@@ -1,5 +1,5 @@
 var data1 = {
-  lastSixMonths_a_f: [2.80, 2.50, 1.00, 2.30, 1.50, 2.00]
+  lastSixMonths_a_f: [1112.80, 1112.80, 1112.80, 1112.80, 1112.80, 1112.80]
 };
 
 var sixBars = new AnonymousBars(document.getElementById("totalSpendContainer"),
@@ -13,8 +13,8 @@ var sixBars = new AnonymousBars(document.getElementById("totalSpendContainer"),
       barWidth_i: 15,
       barRadius_i: 8,
       spaceBetweenBars_i: 16,
-      maxBarHeight_i: 45,
-      minBarHeight_i: 15,
+      maxBarHeight_i: 75,
+      minBarHeight_i: 35,
       containerSize_a_i: [316, 100]
     }
   }
