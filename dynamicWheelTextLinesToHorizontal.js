@@ -1,26 +1,15 @@
  // DynamicWheel object takes in two properties; an elementID to identify the canvas container in the DOM, and a json object that contains the data that will populate the wheel along with the settings.
 function DynamicWheel(elementDOM, settingsJSON) {
-
   this.minSecLength = 4; // min section length that triggers line attachment
-
   this.settingsJSON = settingsJSON;
-console.log(elementDOM)
+
   // Reference to element in DOM and launching canvas context. All static properties of ctx also defined here.
   this.elementDOM = elementDOM;
 
   this.setScreenForPixels();
 
-  // this.elementDOM.width  = 2000;
-  // this.elementDOM.height = 800;
-  // this.elementDOM.style.width = "1000px";
-  // this.elementDOM.style.height = "400px";
-
-  // this.elementDOM.width  = 400;
-  // this.elementDOM.height = 400;
-
   // canvas context properties will be called from this.ctx throughout the whole class. It is important to note that these properties should be monitored because every canvas fill/stroke/text/whatever uses it. That is why I reset some of them sometimes after a path has been filled and closed.
   this.ctx = this.elementDOM.getContext("2d");
-
   this.ctx.scale(2,2);
 
   this.ctx.shadowOffsetX = 0;
@@ -56,17 +45,16 @@ console.log(elementDOM)
   this.recursivelyLoopAndGrabDataForCalculationsAndOrdering();
 }
 
-
-
 DynamicWheel.prototype.setScreenForPixels = function() {
 
-  this.elementDOM.width  = (this.settingsJSON.options.containerSize_a_i[0] * 2);
-  this.elementDOM.height = (this.settingsJSON.options.containerSize_a_i[1] *2);
+ this.elementDOM.width  = (this.settingsJSON.options.containerSize_a_i[0] * 2);
+ this.elementDOM.height = (this.settingsJSON.options.containerSize_a_i[1] * 2);
 
-  this.elementDOM.style.width  = this.settingsJSON.options.containerSize_a_i[0].toString() + "px";
-  this.elementDOM.style.height = this.settingsJSON.options.containerSize_a_i[1].toString() + "px";
+ this.elementDOM.style.width  = this.settingsJSON.options.containerSize_a_i[0].toString() + "px";
+ this.elementDOM.style.height = this.settingsJSON.options.containerSize_a_i[1].toString() + "px";
 
 };
+
 // I did this for the first level only. This might need to get integrated somehow into all levels. But for now this is good. WHat this function does is to set a minimum for the minimum arc radial span. We do not want a piece of the pie that is 1% of the data to only be visually 1%. I think I have to minimum at 10%. This returns an array of percentages that will line up with every section in the first layer. You are on you rown for the following layers.
 DynamicWheel.prototype.level1PercentageAdjuster  = function() {
 
@@ -153,8 +141,7 @@ DynamicWheel.prototype.recursivelyLoopAndGrabDataForCalculationsAndOrdering  = f
     this.calculateRadialEnds(level, currentLevel.sectionsIndex_i);
     this.calculateGridPositioning(level, currentLevel.sectionsIndex_i, obj.length);
     this.setSectionLineAttachmentProperties(level, currentLevel.sectionsIndex_i);
-    this.calculateLineCoordinatesOutAndUpOrDown(level, currentLevel.sectionsIndex_i);
-    this.calculateLineCoordinatesOutAndLeftOrRight(level, currentLevel.sectionsIndex_i);
+    this.calculateLineCoordinates(level, currentLevel.sectionsIndex_i);
 
     currentLevel.sectionsIndex_i = currentLevel.sectionsIndex_i + 1;
     currentLevel.lastPercentage_i = currentLevel.lastPercentage_i + currentSection.globalPercentageArcView_i;
@@ -186,7 +173,7 @@ DynamicWheel.prototype.setLevelProperties  = function(level) {
 
 // This used to be set for levels but I changed it. The reason is for small arc length sections (like under 10%). These need to be triggered at the section level.
 DynamicWheel.prototype.setSectionLineAttachmentProperties  = function(level, section) {
-  console.log('here')
+//  console.log('here')
   var currentLevel = this.layersWithSectionData_a_o[level];
   var currentSection = currentLevel.sections[section];
 
@@ -198,7 +185,7 @@ DynamicWheel.prototype.setSectionLineAttachmentProperties  = function(level, sec
 
   // This is for the line attachment incase the arc length is too small. RIght now it is set for 4% hardcoded. We can have that as an option later.
   if (currentSection.globalPercentageArcView_i <= this.minSecLength && currentLevel.printLocationIfUnderPercent_s == 'attached') {
-    console.log('yes')
+//    console.log('yes')
     currentSection.attachedPrintOptions_s = [currentLevel.printOption_s].concat(currentSection.attachedPrintOptions_s);
     currentSection.attachmentTextFonts_s = [currentLevel.textFont_s].concat(currentSection.attachmentTextFonts_s);
   }
@@ -309,7 +296,7 @@ DynamicWheel.prototype.calculateGridPositioning = function(level, section, numbe
 }
 
 
-DynamicWheel.prototype.calculateLineCoordinatesOutAndUpOrDown = function(level, section, numberOfSections) {
+DynamicWheel.prototype.calculateLineCoordinates = function(level, section, numberOfSections) {
 
   var currentLevel = this.layersWithSectionData_a_o[level];
   var currentSection = currentLevel.sections[section];
@@ -334,46 +321,6 @@ DynamicWheel.prototype.calculateLineCoordinatesOutAndUpOrDown = function(level, 
 
   currentSection.lineCoords_a_i.push([endXpart2, endYpart2]);
 }
-
-
-
-
-
-
-
-
-DynamicWheel.prototype.calculateLineCoordinatesOutAndLeftOrRight = function(level, section, numberOfSections) {
-
-  var currentLevel = this.layersWithSectionData_a_o[level];
-  var currentSection = currentLevel.sections[section];
-
-  var lineLength =  currentSection.lineAttachmentLength_i;
-  currentSection.lineCoords_a_i = [[currentSection.edgeSweetSpotXcoord, currentSection.edgeSweetSpotYcoord]]
-
-  var endXpart1 = this.containerSize_a_i[0] / 2 + (currentSection.adjustedEdgeRadius_i + lineLength)* Math.cos((currentSection.radialStart + currentSection.radialEnd) / 2);
-  var endYpart1 = this.containerSize_a_i[1] / 2 + (currentSection.adjustedEdgeRadius_i + lineLength)* Math.sin((currentSection.radialStart + currentSection.radialEnd) / 2);
-
-  currentSection.lineCoords_a_i.push([endXpart1, endYpart1]);
-
-  if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI/2 && (currentSection.radialStart + currentSection.radialEnd) / 2 < Math.PI*3/2) {
-    var endXpart2 = endXpart1 - 20;
-    var endYpart2 = endYpart1;
-    currentSection.lineTextBaselineProperty_s = 'middle';
-  } else {
-    var endXpart2 = endXpart1 + 20;
-    var endYpart2 = endYpart1;
-    currentSection.lineTextBaselineProperty_s = 'middle';
-  }
-
-  currentSection.lineCoords_a_i.push([endXpart2, endYpart2]);
-}
-
-
-
-
-
-
-
 
 // This one is a work in progress. This is the animator which is also a recursive function. The problem I am having right now is that I am building up each section to 100% for each level and moving onto the next section. This is an issue if the first level has 6 section and the second level has 12 and the 3rd level has 24 and so on. When the first level finishes, the 3rd level will only be a quarter finshed. This does not look good. OK so why did I do it this way. In order to get the animation effect of the pie chart slowly completing radially, HTML canvas is set up in a way that you have to clear the canvas and reprint. So for example. If I am making a line that is 100 units long, I can loop through 100 time (for 100% at the end) and build the line from 0 to percent + 1 each time. Each time, the clearRect, will empty the screen and immediately prrint out the line 1% larger making it look like it's growing. Simple enough right? Wrong. What if I have 6 sections in a wheel in layer 1, and 12 sections in layer 2, and 24 and so one. In order for each level to go around the circle at the same pace, everytime a section finishes on any level, I need to stop and save the current section and paused endpoint at every other level. It sounds doable, but it will take a complete restructuring of what I have. It is important to note that each section is it's own entity.
 DynamicWheel.prototype.animationCycler = function(sectionIDs, sectionPercentInterval) {
@@ -601,23 +548,21 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
 
   if (currentSection.lineAttachment_b == true) {
 
-    var buffer = 2;
+    var buffer = 5;
     var fontSize;
     var prevFontSize = 0;
-    var spacing = 0;
     var toPaste;
     var xPositioning;
     var yPositioning;
- console.log('attachedPrintOptions_s', currentSection.attachedPrintOptions_s)
-    for (var i = 0 ; i < currentSection.attachedPrintOptions_s.length ; i++) {
 
+    for (var i = 0 ; i < currentSection.attachedPrintOptions_s.length ; i++) {
 
       this.pasteLinesForExtention(levelID, sectionID);
       this.ctx.beginPath();
       this.ctx.fillStyle = currentSection.attachmentTextColor_s;
       this.ctx.textBaseline = currentSection.lineTextBaselineProperty_s;
 
-      if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI/2 && (currentSection.radialStart + currentSection.radialEnd) / 2 < Math.PI*3/2) {
+      if ((currentSection.radialStart + currentSection.radialEnd) / 2 >= Math.PI) {
 
         this.ctx.font = currentSection.attachmentTextFonts_s[currentSection.attachedPrintOptions_s.length - 1 - i];
         fontSize = parseInt(currentSection.attachmentTextFonts_s[currentSection.attachedPrintOptions_s.length - 1 - i].match(/\d/g).join(""));
@@ -633,22 +578,9 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
         if (currentSection.attachedPrintOptions_s[currentSection.attachedPrintOptions_s.length - 1 - i] == 'value') {
           toPaste = currentSection.value_i.toString();
         }
-        // totalChars = totalChars + toPaste.length
 
-        var metrics = this.ctx.measureText(toPaste);
-        // console.log('xxxxx', metrics.width);
-
-        if ( i == 0 ) {
-          spacing = metrics.width/2 + buffer;
-          xPositioning = currentSection.lineCoords_a_i[2][0] -  spacing;
-          yPositioning = currentSection.lineCoords_a_i[2][1];
-          spacing = spacing + metrics.width/2;
-        } else {
-          spacing = metrics.width/2 + spacing + buffer + 3;
-          xPositioning = currentSection.lineCoords_a_i[2][0] -  spacing;
-          yPositioning = currentSection.lineCoords_a_i[2][1];
-          spacing = spacing + metrics.width/2;
-        }
+        xPositioning = currentSection.lineCoords_a_i[2][0];
+        yPositioning = currentSection.lineCoords_a_i[2][1] - (i * (prevFontSize + buffer));
 
       } else {
 
@@ -666,22 +598,9 @@ DynamicWheel.prototype.pasteLineExtensionTexts = function(levelID, sectionID) {
         if (currentSection.attachedPrintOptions_s[i] == 'value') {
           toPaste = currentSection.value_i.toString();
         }
-        // totalChars = totalChars + toPaste.length
 
-        var metrics = this.ctx.measureText(toPaste);
-        // console.log('xxxxx', metrics.width);
-
-        if ( i == 0 ) {
-          spacing = metrics.width/2 + buffer;
-          xPositioning = currentSection.lineCoords_a_i[2][0] +  spacing;
-          yPositioning = currentSection.lineCoords_a_i[2][1];
-          spacing = spacing + metrics.width/2;
-        } else {
-          spacing = metrics.width/2 + spacing + buffer + 3;
-          xPositioning = currentSection.lineCoords_a_i[2][0] +  spacing;
-          yPositioning = currentSection.lineCoords_a_i[2][1];
-          spacing = spacing + metrics.width/2;
-        }
+        xPositioning = currentSection.lineCoords_a_i[2][0];
+        yPositioning = currentSection.lineCoords_a_i[2][1] + (i * (prevFontSize + buffer));
 
       }
 
