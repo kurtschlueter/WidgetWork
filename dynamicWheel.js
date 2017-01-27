@@ -2,13 +2,13 @@
 function DynamicWheel(elementDOM, settingsJSON) {
 
   this.minSecLength = 4; // min section length that triggers line attachment
-  this.settingsJSON = settingsJSON;
 
+  this.settingsJSON = settingsJSON;
+console.log(elementDOM)
   // Reference to element in DOM and launching canvas context. All static properties of ctx also defined here.
   this.elementDOM = elementDOM;
 
-  this.elementDOM.width  = this.settingsJSON.options.containerSize_a_i[0];
-  this.elementDOM.height = this.settingsJSON.options.containerSize_a_i[1];
+  this.setScreenForPixels();
 
   this.elementDOM.width  = 1000;
   this.elementDOM.height = 1000;
@@ -56,6 +56,17 @@ function DynamicWheel(elementDOM, settingsJSON) {
   this.recursivelyLoopAndGrabDataForCalculationsAndOrdering();
 }
 
+
+
+DynamicWheel.prototype.setScreenForPixels = function() {
+
+  this.elementDOM.width  = (this.settingsJSON.options.containerSize_a_i[0] * 2);
+  this.elementDOM.height = (this.settingsJSON.options.containerSize_a_i[1] * 2);
+
+  this.elementDOM.style.width  = this.settingsJSON.options.containerSize_a_i[0].toString() + "px";
+  this.elementDOM.style.height = this.settingsJSON.options.containerSize_a_i[1].toString() + "px";
+
+};
 // I did this for the first level only. This might need to get integrated somehow into all levels. But for now this is good. WHat this function does is to set a minimum for the minimum arc radial span. We do not want a piece of the pie that is 1% of the data to only be visually 1%. I think I have to minimum at 10%. This returns an array of percentages that will line up with every section in the first layer. You are on you rown for the following layers.
 DynamicWheel.prototype.level1PercentageAdjuster  = function() {
 
