@@ -1,5 +1,5 @@
 var data1 = {
-  lastSixMonths_a_f: [1112.80, 1112.80, 1112.80, 1112.80, 1112.80, 1112.80]
+  lastSixMonths_a_f: [7000, 6000, 0, 0, 0, 0]
 };
 
 var sixBars = new AnonymousBars(document.getElementById("totalSpendContainer"),

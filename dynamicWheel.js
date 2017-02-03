@@ -153,7 +153,7 @@ DynamicWheel.prototype.recursivelyLoopAndGrabDataForCalculationsAndOrdering  = f
     this.calculateRadialEnds(level, currentLevel.sectionsIndex_i);
     this.calculateGridPositioning(level, currentLevel.sectionsIndex_i, obj.length);
     this.setSectionLineAttachmentProperties(level, currentLevel.sectionsIndex_i);
-    this.calculateLineCoordinatesOutAndUpOrDown(level, currentLevel.sectionsIndex_i);
+    // this.calculateLineCoordinatesOutAndUpOrDown(level, currentLevel.sectionsIndex_i);
     this.calculateLineCoordinatesOutAndLeftOrRight(level, currentLevel.sectionsIndex_i);
 
     currentLevel.sectionsIndex_i = currentLevel.sectionsIndex_i + 1;
